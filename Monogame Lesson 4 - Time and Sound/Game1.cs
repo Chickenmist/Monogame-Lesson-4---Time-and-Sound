@@ -44,6 +44,8 @@ namespace Monogame_Lesson_4___Time_and_Sound
         {
             // TODO: Add your initialization logic here
 
+            Window.Title = "Bomb";
+
             _graphics.PreferredBackBufferWidth = 800;
             _graphics.PreferredBackBufferHeight = 500;
             _graphics.ApplyChanges();
@@ -83,7 +85,6 @@ namespace Monogame_Lesson_4___Time_and_Sound
         protected override void Update(GameTime gameTime)
         {
             mouseState = Mouse.GetState();
-            this.Window.Title = mouseState.X + ", " + mouseState.Y;
             if (mouseState.LeftButton == ButtonState.Pressed && bombDisplay.Contains(mouseState.Position) && bombDefused == false || mouseState.LeftButton == ButtonState.Pressed && bombButton.Contains(mouseState.Position) && bombDefused == false)
             {
                 seconds = 15f;
