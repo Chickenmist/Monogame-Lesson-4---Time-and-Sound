@@ -13,6 +13,11 @@ namespace Monogame_Lesson_4___Time_and_Sound
         Texture2D bomb;
 
         Rectangle bombRect = new Rectangle();
+        Rectangle bombDisplay = new Rectangle();
+        Rectangle bombButton = new Rectangle();
+        Rectangle greenWire = new Rectangle();
+        Rectangle redWire = new Rectangle();
+        Rectangle bombRearmButton = new Rectangle();
 
         SpriteFont timeFont;
 
@@ -24,6 +29,7 @@ namespace Monogame_Lesson_4___Time_and_Sound
         SoundEffectInstance explodeInstance;
 
         bool bombExploded;
+        bool bombDefused;
 
         Texture2D explosionTexture;
 
@@ -42,11 +48,17 @@ namespace Monogame_Lesson_4___Time_and_Sound
             _graphics.PreferredBackBufferHeight = 500;
             _graphics.ApplyChanges();
 
-            bombRect = new Rectangle(50, 50, 700, 400);
-
             bombExploded = false;
+            bombDefused = false;
 
             seconds = 15;
+            
+            bombRect = new Rectangle(50, 50, 700, 400);
+            bombDisplay = new Rectangle(245, 160, 217, 173);
+            bombButton = new Rectangle(255, 135, 5, 10);
+            greenWire = new Rectangle(491, 164, 26, 11);
+            redWire = new Rectangle(491, 190, 26, 14);
+            bombRearmButton = new Rectangle(486, 224, 4, 53);
 
             base.Initialize();
         }
@@ -71,9 +83,26 @@ namespace Monogame_Lesson_4___Time_and_Sound
         protected override void Update(GameTime gameTime)
         {
             mouseState = Mouse.GetState();
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            this.Window.Title = mouseState.X + ", " + mouseState.Y;
+            if (mouseState.LeftButton == ButtonState.Pressed && bombDisplay.Contains(mouseState.Position) && bombDefused == false || mouseState.LeftButton == ButtonState.Pressed && bombButton.Contains(mouseState.Position) && bombDefused == false)
             {
                 seconds = 15f;
+            }
+            
+            if (mouseState.LeftButton == ButtonState.Pressed && greenWire.Contains(mouseState.Position))
+            {
+                bombDefused = true;
+            }
+
+            if (mouseState.LeftButton == ButtonState.Pressed && redWire.Contains(mouseState.Position))
+            {
+                seconds = 0f;
+                bombDefused = false;
+            }
+
+            if (mouseState.LeftButton == ButtonState.Pressed && bombRearmButton.Contains(mouseState.Position) && bombDefused == true)
+            {
+                bombDefused = false;
             }
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -86,11 +115,11 @@ namespace Monogame_Lesson_4___Time_and_Sound
                 this.Exit();
             }
 
-            if (seconds > 0)
+            if (seconds > 0 && bombDefused == false)
             {
                 seconds -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else
+            else if (seconds == 0 && bombDefused == false)
             {
                 explodeInstance.Play();
                 bombExploded = true;
@@ -115,7 +144,6 @@ namespace Monogame_Lesson_4___Time_and_Sound
             {
                 _spriteBatch.Draw(explosionTexture, bombRect, Color.White);
             }
-            
             _spriteBatch.End();
 
             base.Draw(gameTime);
